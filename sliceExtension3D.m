@@ -1,9 +1,9 @@
 % sliceExtension3D
 clear all;
-xplus = 1.0;
+xplus = 1.; %1.1;%2.5;
 xminus = 0.1;
 inputfile = 'MeltPool.csv';
-rows = csvread(inputfile);
+rows = csvread(inputfile); rows = single(rows);
 x = rows(:,1);
 y = rows(:,2);  % fixed
 z = rows(:,3);

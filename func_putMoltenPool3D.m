@@ -16,9 +16,9 @@ function [outputstruct, active] = func_putMoltenPool3D(struct, T, Tliq, Tsol, dx
                 struct(i,j,k).temp = T(i,j,k);               
                 struct(i,j,k).undercooling = Tliq-T(i,j);
                 struct(i,j,k).fs = 1;  % fraction solid
-                struct(i,j,k).init_point = [(i-1)*dx+xmin,...
-                                            (j-1)*dx+ymin,...
-                                            (k-1)*dx+zmin];
+%                 struct(i,j,k).init_point = [(i-1)*dx+xmin,...
+%                                             (j-1)*dx+ymin,...
+%                                             (k-1)*dx+zmin];
             end
         end
     end
@@ -32,29 +32,29 @@ function [outputstruct, active] = func_putMoltenPool3D(struct, T, Tliq, Tsol, dx
                     struct(i,j,k).fs = 1.;
                     struct(i,j,k).undercooling=0;     
                     struct(i,j,k).length=0;                
-                    struct(i,j,k).active = 0;           
+%                     struct(i,j,k).active = 0;           
                     struct(i,j,k).deltaTime=0;
-                    struct(i,j,k).init_point = [(i-1)*dx+xmin,...
-                                                (j-1)*dx+ymin,...
-                                                (k-1)*dx+zmin];
+%                     struct(i,j,k).init_point = [(i-1)*dx+xmin,...
+%                                                 (j-1)*dx+ymin,...
+%                                                 (k-1)*dx+zmin];
                 elseif T(i,j,k)>Tsol && T(i,j,k)<=Tliq
                     struct(i,j,k).fs = 1 - (T(i,j,k)-Tsol)/(Tliq-Tsol);    
                     struct(i,j,k).undercooling=100;
                     struct(i,j,k).length=0;
-                    struct(i,j,k).active = 1;
+%                     struct(i,j,k).active = 1;
                     struct(i,j,k).deltaTime=0;
-                    struct(i,j,k).init_point = [(i-1)*dx+xmin,...
-                                                (j-1)*dx+ymin,...
-                                                (k-1)*dx+zmin];
+%                     struct(i,j,k).init_point = [(i-1)*dx+xmin,...
+%                                                 (j-1)*dx+ymin,...
+%                                                 (k-1)*dx+zmin];
                 else
                     struct(i,j,k).fs = 0;
                     struct(i,j,k).undercooling=100;
                     struct(i,j,k).length=0;
-                    struct(i,j,k).active = 1;
+%                     struct(i,j,k).active = 1;
                     struct(i,j,k).deltaTime=0;
-                    struct(i,j,k).init_point = [(i-1)*dx+xmin,...
-                                                (j-1)*dx+ymin,...
-                                                (k-1)*dx+zmin];
+%                     struct(i,j,k).init_point = [(i-1)*dx+xmin,...
+%                                                 (j-1)*dx+ymin,...
+%                                                 (k-1)*dx+zmin];
                 end
             end
         end

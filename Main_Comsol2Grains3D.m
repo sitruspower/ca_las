@@ -1,25 +1,42 @@
+% for unconstrained: comment fs=0.5 in func_initialise
+
 close all;
 
 
-if 1
-run sliceExtension3D.m  % inputfile = 'MeltPool.csv'; --> MeltPoolExtended.csv
-run slice2grid3D.m  % 'MeltPoolExtended.csv' -> 'InterpolatedTemperatureGrid.mat. Assigns "Filling temperature, which is 2200oC; Controls 'dx'
-run assignRandomOrientation3D.m % InterpolatedTemperatureGrid.mat -> RandomOrientation.mat 
+clear all;
+% change presicion:
+presicion = 3;
+digits(presicion);
 
-% then run: 
-Tliq = 2600;
+precalc = 1; % slicing, initialisation
+
+if precalc
+    tic
+    disp('extending the slice....')    
+    run sliceExtension3D.m  % inputfile = 'MeltPool.csv'; --> MeltPoolExtended.csv
+    toc
+    tic
+    disp('interpolating....')
+    run slice2grid3D.m  % 'MeltPoolExtended.csv' -> 'InterpolatedTemperatureGrid.mat. Assigns "Filling temperature, which is 2200oC; Controls 'dx'
+    toc
+    tic
+    disp('assigning orientation....')
+    run assignRandomOrientation3D.m % InterpolatedTemperatureGrid.mat -> RandomOrientation.mat 
+    toc
+end
+
+
+% then run:
+
+%% initialisation
+Tliq = 4000;
 Tsol = 2900;
 velocity = 2.5; % [mm/s], laser speed
 %dx = 2.5e-3;     % [mm] mesh size
 A=1.e-4;         % growth velocity coefficient
-
-% 
-% Initial_temperature = open('InterpolatedTemperatureGrid.mat').vq;
-% xi = open('InterpolatedTemperatureGrid.mat').xi;
-% yi = open('InterpolatedTemperatureGrid.mat').yi;
-% zi = open('InterpolatedTemperatureGrid.mat').zi;
-
+Tfilling = 2200; % oc. Change slice2grid3D.m when assigned different
 inputs=open('InterpolatedTemperatureGrid.mat'); % opening just for the slice, to be removed...
+%% opening grid values
 xi = inputs.xi;
 yi = inputs.yi;
 zi = inputs.zi;
@@ -27,92 +44,115 @@ Initial_temperature = inputs.vq;
 xslice = inputs.xslice;
 yslice = inputs.yslice;
 zslice = inputs.zslice;
-xmin = inputs.xmin;
+xmin = inputs.xmin; 
 ymin = inputs.ymin;
 zmin = inputs.zmin;
 n=length(xi(:,1,1));
 m=length(yi(1,:,1));
 l=length(zi(1,1,:));
-Tfilling = 2200 % oc. Change slice2grid3D.m when assigned different
-
 dx = xi(1,2,1)-xi(1,1,1);  % mm
-end
-
-
 dy = dx;  % mm
 dz = dx;  % mm
 
-dx = xi(1,2,1)-xi(1,1,1);  % mm
-struct = func_initialise_struct3D(Initial_temperature, Tliq, Tsol);
+%% active grains decision
+%%%%%%%%%%%
+checker = 0; % fs = 0.5, active = some chosen grains, no "putMoltenPool"
 
-active = func_active_cells3D(struct, xslice, yslice, zslice, xi, yi, zi, xmin, ymin, zmin);
-vmax = max(vertcat(struct.undercooling)).^2*A;
+%% computations
+if 1
+    tic
+    disp('initialising_struct...')
+    struct = func_initialise_struct_portions3D(Initial_temperature, Tliq, Tsol, checker);
+    toc
+end
+if checker == 1  % with =0 all active grains!
+    deltagrain = 3;
+    active = [round(n/2),round(m/2),round(l/2);...
+                round((n - deltagrain)/2),round((m)/2),round(l/2);...
+                round((n + deltagrain)/2),round((m)/2),round(l/2)]; % chosen grains
+    % middle grain        
+    struct.alpha(active(1,1),active(1,2),active(1,3)) = pi/4;
+    struct.beta(active(1,1),active(1,2),active(1,3)) = pi/4;
+    struct.gamma(active(1,1),active(1,2),active(1,3)) = 0;
+    
+    % left (bottom) grain
+    struct.alpha(active(2,1),active(2,2),active(2,3)) = 0;
+    struct.beta(active(2,1),active(2,2),active(2,3)) = 0;
+    struct.gamma(active(2,1),active(2,2),active(2,3)) = 0;
+    
+    %third (top) grain
+    struct.alpha(active(3,1),active(3,2),active(3,3)) = 0;
+    struct.beta(active(3,1),active(3,2),active(3,3)) = 0;
+    struct.gamma(active(3,1),active(3,2),active(3,3)) = 0;
+else
+    %CORRECT MAIN FUNCTION
+    active = func_active_cells3D(struct, dx); % xslice, yslice, zslice, xi, yi, zi, xmin, ymin, zmin);
+end
+
+% vmax = max(vertcat(struct.undercooling)).^2*A;
+v_mushy = struct.temp(struct.temp<Tliq);
+v_mushy = v_mushy(v_mushy>Tsol);
+% vmax = single(max(Tliq-v_mushy, [], 'all')); 
+vmax = 100.^2*A;
 
 %timestepping
 NUMBER_OF_TIMESTEPS = 60; % 80=17; 40=9, 60=13
-timestep = dx/(10*sqrt(2)* vmax); % 10 timesteps per square % CHANGE COEFFICIENT TO >=2
+timestep = dx/(2*sqrt(3)* vmax); % 10 timesteps per square % CHANGE COEFFICIENT TO >=2
 timelimit = timestep*NUMBER_OF_TIMESTEPS; %0.04;
+delta_pos = 2;
+%Tliqhigh = Tliq + max_grad*delta_pos; % deg C, where it won't attach new point. second number
+Tliqhigh = Tliq;  % overriding Tliqhigh, thus growth only in mushy zone
 
-
-% active = func_active_cells3D();   % saves 'active.mat'
-
-f = figure('Position',[2600 100 1000 600]);
-movegui(f);
-axis equal
-
-hold on
-if 1
-    for pos=1:5:round(3*m/5) %10:10:600
-        fprintf('POS= %.f;', pos);
-        time = (pos+5)/velocity*dx  % s
+for pos=1:delta_pos :round(3*m/5) %10:10:600
+    tic        
+    presicion = 5;
+    digits(presicion);
+    fprintf('POS= %.f;', pos);
+    time = (pos+5)/velocity*dx; % s
+     
+    if 1
         temperature = func_move_molten_pool3D...
-                      (Initial_temperature, xi, yi,zi, Tfilling, velocity, time, dx);  % no plotting
-        orient = open('RandomOrientation.mat');
-        
-        
-        
-        struct = func_restruct_fs_addT3D(struct, temperature, Tliq, Tsol,n,m,l);  % no plotting
-        pause(0.5)
-        
-        % here we have: updated struct, opened "orient".
-        
-        % really weird!!!
-        active = func_active_cells3D(struct, xslice, yslice, zslice, xi, yi, zi, xmin, ymin, zmin); % plotted active. Stopped
-        hold on
-        %scatter3((active(:,2)-1)*dy+xmin,(active(:,1)-1)*dy+ymin,(active(:,3)-1)*dz+zmin,100,'red','filled')
-        
-        
-        
-        struct = func_growth_in_sl3D(active, struct, timelimit);
-        
-        if 1
-        close all;
-            % hold on
-            fs = [struct.alpha];
-            fs = reshape(fs,n,m,l);
-            h = slice(xi, yi, zi, fs, xslice, yslice, zslice);
-            axis equal;
+                      (Initial_temperature, xi, yi,zi, Tfilling, velocity, time, dx);  % no plotting 
 
-            %         set(h,'EdgeColor','none',...
-            %         'FaceColor','interp',...
-            %         'FaceAlpha','interp');
-            %         alpha('color');
-            %         cm_plasma=colormap_plasma(100);
-            %     %         alphamap('rampdown')  
-            %         colormap(cm_plasma) %hot hsv
-            %         colormap(hot) %hot hsv
-            %         alphamap('increase',0.001)
-            %         colorbar;
-            %         pause(1/1000)        
+        if checker == 1
+            disp('checker=1. func restruct_fs_addT is suppressed')
+            active=active(1,:);
+        else
+            %% checking. Moving active on pos instead of moving the pool:
+            struct = func_restruct_fs_addT3D(struct, temperature, Tliq, Tsol,n,m,l, active);  % no plotting
+
+            active = func_active_cells3D(struct, dx);
+%                     active(:,:,:) = active(:,:,:)+[delta_pos,0,0];
+
         end
-        
-        strcat('pos=', string(pos),'.fig')
-        strcat('struct=', string(pos),'.m')
-        savefig(strcat('Alpha. pos=', string(pos),'.fig'))
-        save(strcat('struct=', string(pos),'.mat'))
-        
-        
-        pause(1/1)
-        
+        pause(0.5)
     end
+
+    tic
+    struct = func_growth_in_sl_parallel3D(active, struct, timelimit, timestep, dx, xmin,ymin,zmin);
+    disp('time per growth:')
+    toc
+
+    %% plotting 
+    plotting = 1; 
+    if plotting ==1     
+        plot_struct(struct, n,m,l)
+
+    end
+
+
+    pause(1/100)
+
+    toc
 end
+
+
+disp('saving struct..............')
+%     savefig(strcat('Alpha. pos=', string(pos),'.fig'))
+
+save('mystruct.mat', 'struct')
+%save('mystruct.mat', 'struct', '-v7.3')
+
+strcat('pos=', string(pos),'.fig');
+%     savefig(strcat('Alpha. pos=', string(pos),'.fig'))
+pause(1/1000)

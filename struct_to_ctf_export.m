@@ -1,7 +1,7 @@
 clear all;
-TRANSVERSE = 1;  % set 1 if True. For longitudinal set 0;
-struct_filename = 'struct=41.mat'
-output_name = 'MODEL_EXPORT_v=2p5.ctf'
+LONGIT = 1;  % For longitudinal cross section set 1;
+struct_filename = 'mystruct_aca_360.mat'
+output_name = 'mystruct_aca_360.ctf'
 
 % Loading results from struct:
 if 1
@@ -17,7 +17,7 @@ if 1
     alpha = [s.alpha];
     beta = [s.beta];
     gamma = [s.gamma];
-
+    
     % reshaping inputs into 3D:
     alpha = reshape(alpha,n,m,l);
     beta = reshape(beta,n,m,l);
@@ -25,18 +25,19 @@ if 1
 
 
     % export transverse XY map: 
-    
-    if TRANSVERSE ==1
+    tic
+    if LONGIT ==1
         alpha_mid_XZ = zeros(m,l);
         beta_mid_XZ = zeros(m,l);
         gamma_mid_XZ = zeros(m,l);
-        for i=1:m % X loop
+        parfor i=1:m % X loop
             for j = 1:l  % Z loop        
-                alpha_mid_XZ(i,j) = alpha(round(n/2),i,j);
-                beta_mid_XZ(i,j) =   beta(round(n/2),i,j);
-                gamma_mid_XZ(i,j) = gamma(round(n/2),i,j);        
+                alpha_mid_XZ(i,j) = alpha(round(n/2),i,j)*180/pi;
+                beta_mid_XZ(i,j) =   beta(round(n/2),i,j)*180/pi;
+                gamma_mid_XZ(i,j) = gamma(round(n/2),i,j)*180/pi;        
             end
         end
+    toc
         
     else
         alpha_top_XY = zeros(n,m);
@@ -56,7 +57,7 @@ end
 % writing the header to the file:
 if 1
     
-    if TRANSVERSE ==1
+    if LONGIT ==1
         XCells = m; % X
         YCells = l; % Z
         
@@ -79,7 +80,7 @@ if 1
     lines(11) = string('AcqE3	0\n');
     lines(12) = string('Euler angles refer to Sample Coordinate system (CS0)!	Mag	200	Coverage	80	Device	0	KV	15	TiltAngle	70.0104	TiltAxis	0	DetectorOrientationE1	0.8522	DetectorOrientationE2	98.8425	DetectorOrientationE3	359.3985	WorkingDistance	17.6358	InsertionDistance	193.9844\n');
     lines(13) = string('Phases	2\n');
-    lines(14) = string('3.605;3.605;5.180	90.000;90.000;90.000	Zirconia tetragonal	5	137			"ActaCrys,44B,116-120 "\n');
+    lines(14) = string('3.605;3.605;5.180	90.000;90.000;90.000	 tetragonal	5	137			"ActaCrys,44B,116-120 "\n');
     lines(15) = string('5.146;5.212;5.313	90.000;99.220;90.000	Zr02 monoclinic	2	14			"JAppCrys,27,802-844"\n');
     lines(16) = "Phase	X	Y	Bands	Error	Euler1	Euler2	Euler3	MAD	BC	BS\n";
 
@@ -90,7 +91,7 @@ if 1
 end
 
 
-if TRANSVERSE == 1  % then in XZ plane, j stands for Z
+if LONGIT == 1  % then in XZ plane, j stands for Z
     for i=1:XCells
         for j=1:YCells
 
@@ -99,7 +100,7 @@ if TRANSVERSE == 1  % then in XZ plane, j stands for Z
             EU3 = gamma_mid_XZ(i,j);
 
             strwrite = sprintf('%s \t %s \t %s \t %s \t %s \t %s \t %s \t %s \t %s \t %s \t %s \t \n',...
-            string(1),string(i-1),string(j-1),string(0),string(0),string(EU1),string(EU2),string(EU3),string(0),string(0),string(0));
+            string(1),string(j-1),string(i-1),string(0),string(0),string(EU1),string(EU2),string(EU3),string(0),string(0),string(0));
              % Phase	  X        	Y	       Bands	  Error	    Euler1	   Euler2	     Euler3	       MAD	    BC    BS
 
 
