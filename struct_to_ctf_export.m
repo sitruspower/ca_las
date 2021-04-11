@@ -1,28 +1,23 @@
 clear all;
 LONGIT = 1;  % For longitudinal cross section set 1;
-struct_filename = 'mystruct_aca_360.mat'
-output_name = 'mystruct_aca_360.ctf'
+struct_filename = 'mystruct.mat'
+output_name = 'mystruct.ctf'
 
 % Loading results from struct:
 if 1
     s = open(struct_filename);
     s = s.struct;
-
     %mesh_struct = open('Struct_mesh.mat');
-    [n,m,l] = size(s);
-   
-    % outputfile
-
+    [n,m,l] = size(s.alpha);
     % Euler Angles output:
     alpha = [s.alpha];
     beta = [s.beta];
     gamma = [s.gamma];
     
-    % reshaping inputs into 3D:
-    alpha = reshape(alpha,n,m,l);
-    beta = reshape(beta,n,m,l);
-    gamma = reshape(gamma,n,m,l);
-
+%     % reshaping inputs into 3D:
+%     alpha = reshape(alpha,n,m,l);
+%     beta = reshape(beta,n,m,l);
+%     gamma = reshape(gamma,n,m,l);
 
     % export transverse XY map: 
     tic
@@ -30,7 +25,8 @@ if 1
         alpha_mid_XZ = zeros(m,l);
         beta_mid_XZ = zeros(m,l);
         gamma_mid_XZ = zeros(m,l);
-        parfor i=1:m % X loop
+        % was a parfor loop:
+        for i=1:m % X loop
             for j = 1:l  % Z loop        
                 alpha_mid_XZ(i,j) = alpha(round(n/2),i,j)*180/pi;
                 beta_mid_XZ(i,j) =   beta(round(n/2),i,j)*180/pi;

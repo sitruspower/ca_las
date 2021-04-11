@@ -1,11 +1,6 @@
-function plot_struct(struct,n,m,l)
+function plot_struct_same_figure(struct,n,m,l, pos)
 %UNTITLED Summary of this function goes here
-%   Detailed explanation goes here
-    % Euler Angles output:
 
-
-%     close all;
-    f = figure('Position',[600 10 700 350]);
     alpha = [struct.alpha];
     beta = [struct.beta];
     gamma = [struct.gamma];
@@ -34,44 +29,31 @@ function plot_struct(struct,n,m,l)
                 end                        
             end
         end
-
-        alpha_top_XY = zeros(n,m);
-        beta_top_XY = zeros(n,m);
-        gamma_top_XY = zeros(n,m);
-        fs_XY = zeros(n,m);
-        for i=1:n % X loop
-            for j = 1:m  % Y loop        
-                alpha_top_XY(i,j) = alpha(i,j,round(l));
-                beta_top_XY(i,j) = beta(i,j,round(l));
-                gamma_top_XY(i,j) = gamma(i,j,round(l));    
-                fs_XY(i,j) = fs(i,j,round(l));        
-            end
-        end
+%         alpha_top_XY = zeros(n,m);
+%         beta_top_XY = zeros(n,m);
+%         gamma_top_XY = zeros(n,m);
+%         fs_XY = zeros(n,m);
+%         for i=1:n % X loop
+%             for j = 1:m  % Y loop        
+%                 alpha_top_XY(i,j) = alpha(i,j,round(l));
+%                 beta_top_XY(i,j) = beta(i,j,round(l));
+%                 gamma_top_XY(i,j) = gamma(i,j,round(l));    
+%                 fs_XY(i,j) = fs(i,j,round(l));        
+%             end
+%         end
     end
 
 
     %% plotting
-
     hold on
-    tiledlayout(2,1)
-    nexttile
-    hold on
-    h = pcolor(alpha_mid_XZ);
-    title('Middle Cut Alpha')  
-    set(h, 'EdgeColor', 'none');  
-    axis equal
-    hold off
-
-    nexttile
-    hold on
-    axis equal
-    hold off
-    h = pcolor(alpha_top_XY);
-    title('Top View Alpha');
+    h=pcolor(alpha_mid_XZ);
     set(h, 'EdgeColor', 'none');
-    axis equal
-    hold off
+    ax = gca;
     
+    ax.XLim = [pos,round(m/3) + pos];  % vertical
+    ax.YLim = [0,l];  % horozintal
+    
+    view(0,90)
     pause(1/1000)
 
 end

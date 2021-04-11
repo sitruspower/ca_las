@@ -75,7 +75,7 @@ function [active] = func_active_cells3D(struct, dx) %, xslice, yslice, zslice, x
 
 
     % jik
-    if 1
+    if 0
         for j=1:m
             for i=1:n
             finished = 0;
@@ -91,7 +91,7 @@ function [active] = func_active_cells3D(struct, dx) %, xslice, yslice, zslice, x
     end
 
     % jki
-    if 1
+    if 0
         for j=1:m
             for k=1:l
             finished = 0;
@@ -108,7 +108,7 @@ function [active] = func_active_cells3D(struct, dx) %, xslice, yslice, zslice, x
 
 
     % jk-i
-    if 1
+    if 0
         for j=1:m
             for k=1:l
             finished = 0;

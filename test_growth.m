@@ -1,0 +1,1 @@
+struct = func_restruct_fs_addT3D(struct, temperature, Tliq, Tsol,n,m,l, active);
