@@ -70,6 +70,9 @@ function structure = func_initialise_struct_portions3D(T, Tliq, Tsol, checker) %
         s_beta(:,:,:) = beta(:,:,:);
         s_gamma(:,:,:) = gamma(:,:,:);              
         s_undercooling(:,:,:) = 100; % -(T(:,:,:) - Tliq); % old = 100; %
+        
+        % ADDING REAL UNDERCOOLING VALUE:
+%         s_undercooling(:,:,:) = (T(:,:,:) - Tsol); % old = 100; %
         s_length(:,:,:) = 0;
         s_deltaTime(:,:,:) = 0;
     %                 cell.grain = j + (i-1)*n + (k-1)*n*m;            

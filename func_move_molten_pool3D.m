@@ -1,8 +1,8 @@
 
-function T = func_move_molten_pool3D(T, xi, yi,zi, Tfilling, velocity, time, dx)
+function T = func_move_molten_pool3D(T, xi, yi,zi, Tfilling, pos, dx)
 	dy=dx;
     dz=dx;
-    position = round(velocity*time/dx);
+    position = pos;
     % move s-l
     
     

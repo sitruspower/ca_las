@@ -58,8 +58,6 @@ if 1
     
 %     hold on
 %     func_plot_active (active)
-    
-%     
 %     fs = [struct.fs];
 %     fs = reshape(fs,n,m,l);
 %     h = slice(xi, yi, zi, fs, xslice, yslice, zslice);

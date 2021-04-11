@@ -15,10 +15,12 @@ dz = z(1,1,2)-z(1,1,1);  % mm
 alpha = zeros(size(x),'like', x); alpha = single(alpha);
 beta= zeros(size(x),'like', x); beta = single(beta);
 gamma = zeros(size(x),'like', x); gamma = single(gamma);
-% 
-alpha(:,:,:) = round(rand(size(x))*pi*20)/20;
-beta(:,:,:) = round(rand(size(x))*pi*20)/20;
-gamma(:,:,:) = round(rand(size(x))*pi*20)/20;
+
+
+%%
+alpha(:,:,:) = round(rand(size(x))*pi/2*100)/100;
+beta(:,:,:) = round(rand(size(x))*pi/2*100)/100;
+gamma(:,:,:) = round(rand(size(x))*pi*100)/100;
 
 if 0
     disp('in script "ASSIGN RANDOM ORIENTATION" alpha beta gamma changed to fixed value!!!!!!')
@@ -26,6 +28,7 @@ if 0
     beta(:,:,:) = pi;
     gamma(:,:,:) = pi;
 end
+
 
 clearvars -except alpha beta gamma;
 save('RandomOrientation.mat');

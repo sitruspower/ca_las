@@ -5,7 +5,7 @@ function plot_fsstruct(struct,n,m,l)
 
 
     close all;
-    f = figure('Position',[2600 100 1200 900]);
+    f = figure('Position',[2500 50 800 600]);
     alpha = [struct.fs];
     beta = [struct.fs];
     gamma = [struct.fs];

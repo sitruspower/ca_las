@@ -1,8 +1,6 @@
 % for unconstrained: comment fs=0.5 in func_initialise
-
+%% started at around 14.00 14.02.21
 close all;
-
-
 clear all;
 % change presicion:
 presicion = 3;
@@ -17,7 +15,7 @@ if precalc
     toc
     tic
     disp('interpolating....')
-    run slice2grid3D.m  % 'MeltPoolExtended.csv' -> 'InterpolatedTemperatureGrid.mat. Assigns "Filling temperature, which is 2200oC; Controls 'dx'
+    run slice2grid3D_Symmetry.m  % 'MeltPoolExtended.csv' -> 'InterpolatedTemperatureGrid.mat. Assigns "Filling temperature, which is 2200oC; Controls 'dx'
     toc
     tic
     disp('assigning orientation....')
@@ -29,10 +27,8 @@ end
 % then run:
 
 %% initialisation
-Tliq = 3800;
-Tsol = 2800;
-velocity = 2.5; % [mm/s], laser speed
-%dx = 2.5e-3;     % [mm] mesh size
+Tliq = 6000;
+Tsol = 3000;
 A=1.e-4;         % growth velocity coefficient
 Tfilling = 2200; % oc. Change slice2grid3D.m when assigned different
 inputs=open('InterpolatedTemperatureGrid.mat'); % opening just for the slice, to be removed...
@@ -59,6 +55,7 @@ dz = dx;  % mm
 checker = 0; % fs = 0.5, active = some chosen grains, no "putMoltenPool"
 
 %% computations
+
 if 1
     tic
     disp('initialising_struct...')
@@ -66,9 +63,13 @@ if 1
     toc
 end
 
+
+disp('TIME TO MOVE STRUCT AND FIND ACTIVE:')   
+tic
+disp('___________________________________')
 %CORRECT MAIN FUNCTION
 active = func_active_cells3D(struct, dx); % xslice, yslice, zslice, xi, yi, zi, xmin, ymin, zmin);
-
+toc
 % vmax = max(vertcat(struct.undercooling)).^2*A;
 v_mushy = struct.temp(struct.temp<Tliq);
 v_mushy = v_mushy(v_mushy>Tsol);
@@ -78,57 +79,68 @@ vmax = 100.^2*A;
 %% timestepping
 % length of capture: defined as number of timesteps(N_TSTEP)/(DX_ADV)timestep dx advance
 % CAREFUL!!! MESH-DEPENDENT PARAMETER!!!
-length_of_capture = 10; % how many dx/2 will be advanced during captire. ~30 is great. 
-
+length_of_capture = 50; % how many dx will be advanced during captire. ~30 is great. 
 %  how many (dx) advances can be in a single timestep
-DX_ADV = 2; % set to 1 for fastest growth.
+DX_ADV = 5.; % set to 1 for fastest growth.
 N_TSTEP= length_of_capture*DX_ADV; % 80=17; 40=9, 60=13
-timestep = dx/(DX_ADV*sqrt(3)* vmax); % 10 timesteps per square % CHANGE COEFFICIENT TO >=2
+timestep = dx/(DX_ADV*vmax); % *sqrt(3) 
+
 timelimit = timestep*N_TSTEP; %0.04;
 
 %Tliqhigh = Tliq + max_grad*delta_pos; % deg C, where it won't attach new point. second number
 Tliqhigh = Tliq;  % overriding Tliqhigh, thus growth only in mushy zone
 
 %% s-l interface moveme
-delta_pos = 5;
+delta_pos = round(length_of_capture/2);
+disp('___________________________________')
 
-for pos=1:delta_pos :round(3*m/5) %10:10:600
+for pos=1:delta_pos :round(3*m/6) %10:10:600
+    
     tic        
-    presicion = 5;
+    presicion = 3;
     digits(presicion);
-    fprintf('POS= %.f;', pos);
-    time = (pos+5)/velocity*dx; % s     
+    disp('___________________________________')
+    fprintf('POS= %.f;\n', pos);
     temperature = func_move_molten_pool3D...
-              (Initial_temperature, xi, yi,zi, Tfilling, velocity, time, dx);  % no plotting 
+              (Initial_temperature, xi, yi,zi, Tfilling, pos, dx);  % no plotting 
           
     %% checking. Moving active on pos instead of moving the pool:
     struct = func_restruct_fs_addT3D(struct, temperature, Tliq, Tsol,n,m,l, active);  % no plotting
+%     plot_fsstruct(struct,n,m,l)
+    
     active = func_active_cells3D(struct, dx);
+    disp('TIME TO MOVE STRUCT AND FIND ACTIVE:')   
+    toc
+    disp('___________________________________')
     
-    if pos == 1
-        % removing every 2nd active cell several times.
-%         active(2:2:end,:) = [];
-%         active(2:2:end,:) = [];
-%         active(2:2:end,:) = [];
-    end
-    
-    pause(0.5)
+    pause(0.0001)
     tic
-    struct = func_growth_in_sl_parallel3D(active, struct, timelimit, timestep, dx, xmin,ymin,zmin);
+    struct = func_growth_in_sl_parallel3D(active, struct, timelimit, timestep, dx, xmin,ymin,zmin, pos);
     disp('time per growth:')
     toc
     
     %% plotting 
     plotting = 1; 
     if plotting ==1 
+        close all;
         plot_struct(struct, n,m,l)
         pause(1/100)
+
+        disp('saving figure ..............')
+        savefig(strcat('Alpha. pos=', string(pos),'.fig'))
     end
 end
 disp('saving struct..............')
-%     savefig(strcat('Alpha. pos=', string(pos),'.fig'))
+savefig(strcat('Alpha. pos=', string(pos),'.fig'))
+
+%% saving struct and postprocessing via MTEX:
 save('mystruct.mat', 'struct')
-%save('mystruct.mat', 'struct', '-v7.3')
-strcat('pos=', string(pos),'.fig');
-%     savefig(strcat('Alpha. pos=', string(pos),'.fig'))
+run struct_to_ctf_export.m
+run mtex_script.m
+
+% save('mystruct.mat', 'struct', '-v7.3')
+% pos=round(3*m/6);
+% ystrcat('pos=', string(pos),'.fig');
+% savefig(strcat('Alpha. pos=', string(pos),'.fig'))
+
 pause(1/1000)

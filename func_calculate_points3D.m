@@ -4,8 +4,8 @@ function [rotated_points]=func_calculate_points3D(in, ...
 % Creates square points (can become a rectangle in the future)    
 % initial points of the cube without rotation:   
 
-a = single(length_cube);
-c = (a)*5.1/3.6; %5.108/3.605; % long/short side
+a = double(length_cube);
+c = (a)*2; %5.1/3.6; %5.108/3.605; % long/short side
 % c=a;
 c1 = [ a  0  0];
 c2 = [ 0  a  0];
