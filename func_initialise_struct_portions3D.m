@@ -69,7 +69,9 @@ function structure = func_initialise_struct_portions3D(T, Tliq, Tsol, checker) %
         s_alpha(:,:,:) = alpha(:,:,:);
         s_beta(:,:,:) = beta(:,:,:);
         s_gamma(:,:,:) = gamma(:,:,:);              
-        s_undercooling(:,:,:) = 100; % -(T(:,:,:) - Tliq); % old = 100; %
+%         s_undercooling(:,:,:)= (T(:,:,:) - Tsol); % old = 100; %
+        s_undercooling(:,:,:) = nan; 
+
         
         % ADDING REAL UNDERCOOLING VALUE:
 %         s_undercooling(:,:,:) = (T(:,:,:) - Tsol); % old = 100; %
@@ -83,16 +85,25 @@ function structure = func_initialise_struct_portions3D(T, Tliq, Tsol, checker) %
         if checker == 1
             s_fs=s_fs*0.5;
         else
+            
+%         undercooling_add_value = 50; % [K] adding on top 
         for i=1:n
             for j=1:m
                 for k=1:l
                     s_temp(i,j,k) = T(i,j,k);                
                     if T(i,j,k) >= Tliq
                         s_fs(i,j,k) = 0;
+                        
+%                         s_undercooling(i,j,k) = undercooling_add_value;
+                        
                     elseif T(i,j,k) <Tliq && T(i,j,k) > Tsol
                        s_fs(i,j,k) = 1-(T(i,j,k)-Tsol)/(Tliq - Tsol);
+                       
+%                         s_undercooling(i,j,k) = T(i,j,k)-Tsol+undercooling_add_value;
                     elseif T(i,j,k) <= Tsol
                         s_fs(i,j,k) = 1;
+                        
+%                         s_undercooling(i,j,k) = undercooling_add_value;
                     else                    
                         s_fs(i,j,k) = 1;
                     end

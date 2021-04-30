@@ -1,11 +1,20 @@
 function [rotated_points]=func_calculate_points3D(in, ...
                                     xmin, ymin, zmin,dx,...
-                                    alpha,beta, gamma, length_cube)
+                                    beta,gamma, alpha,... % changed from @alpha,beta, gamma,...@
+                                    length_cube)  
+
+% checked: 
+% a,b,g;   g,a,b;   b,a,g; 
+% to check:
+%   b,g,a; g,b,a; g,a,b
+
+
+                                
 % Creates square points (can become a rectangle in the future)    
 % initial points of the cube without rotation:   
 
 a = double(length_cube);
-c = (a)*2; %5.1/3.6; %5.108/3.605; % long/short side
+c = (a) * (5.1/3.62); %5.1/3.6; %5.108/3.605; % long/short side
 % c=a;
 c1 = [ a  0  0];
 c2 = [ 0  a  0];
@@ -21,8 +30,8 @@ c6 = [ 0  0 -c];
 %         single((in(3)-delta))*dx+zmin];
 
 initial_point = func_ijk_to_xyz(in, dx,xmin,ymin,zmin);
-cubic_points = [c1;c2;c3;c4;c5;c6];
-points = cubic_points + initial_point;   
+% cubic_points = [c1;c2;c3;c4;c5;c6];
+% points = cubic_points + initial_point;   
 
 % rotation matrices:    
 Rx = [cos(alpha)*cos(beta) ...

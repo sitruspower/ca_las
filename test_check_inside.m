@@ -16,10 +16,14 @@ points = func_calculate_points3D(initial_point, ...
                                     xmin, ymin, zmin,dx,...
                                     alpha,beta, gamma, length_cube);
 
-P = (rand(1000,3)-0.5)*3;
+P = (rand(1000,3)-0.5)*2;
 
 
-IsCaptured = func_check_inside3D(points, P);
+triangulation_matrix = [5     2     1     3;
+    6     1     2     3;4     5     1     3;
+                        4     1     6     3;];
+
+IsCaptured = func_check_inside3D(points, P, triangulation_matrix);
 capturedPoints = P.*IsCaptured;
 capturedPoints( ~any(capturedPoints,2), : ) = [];
 

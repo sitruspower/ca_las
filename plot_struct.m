@@ -72,6 +72,8 @@ function plot_struct(struct,n,m,l)
     axis equal
     hold off
     
+    colorbar
+    
     pause(1/1000)
 
 end

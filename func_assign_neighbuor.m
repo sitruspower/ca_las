@@ -1,4 +1,4 @@
-function neigh = func_assign_neighbuor(active, grain, n,m,l)
+function neigh = func_assign_neighbuor(active, n,m,l)
     top = 0;
     btm = 0;
     begin = 0;
@@ -6,32 +6,32 @@ function neigh = func_assign_neighbuor(active, grain, n,m,l)
     left = 0;
     right = 0;
 
-    if active(grain,1) == 1  % 1
+    if active(1,1) == 1  % 1
         begin = 0;
         finish = 1;
     end
     
-    if active(grain,1) == n  % en
+    if active(1,1) == n  % en
         begin = 1;
         finish = 0;
     end
     
     
-    if active(grain,2) == 1  % 1
+    if active(1,2) == 1  % 1
         left = 0;
         right = 1;
     end
     
-    if active(grain,2) == m  % em
+    if active(1,2) == m  % em
         left = 1;
         right = 0;
     end
-    if active(grain,3) == 1  % one
+    if active(1,3) == 1  % one
         btm = 1;
         top = 0;
     end
     
-    if active(grain,3) == l  % el
+    if active(1,3) == l  % el
         btm = 0;
         top = 1;
     end
@@ -39,35 +39,35 @@ function neigh = func_assign_neighbuor(active, grain, n,m,l)
     
     
     neigh = [                        
-     [active(grain,1),active(grain,2),    active(grain,3)+1];     % 1  %hactive(grain,1)gher z plane                        
-     [active(grain,1)+1,active(grain,2),  active(grain,3)];   % 2                     
-     [active(grain,1),  active(grain,2)-1,active(grain,3)];   % 3
-     [active(grain,1)-1,active(grain,2),  active(grain,3)];   % 4                      
-     [active(grain,1),  active(grain,2)+1,active(grain,3)];   % 5  %mactive(grain,1)ddle z plane                     
-     [active(grain,1),active(grain,2),    active(grain,3)-1];     % 6      %hactive(grain,1)gher z plane
+     [active(1,1),active(1,2),    active(1,3)+1];     % 1  %hactive(1,1)gher z plane                        
+     [active(1,1)+1,active(1,2),  active(1,3)];   % 2                     
+     [active(1,1),  active(1,2)-1,active(1,3)];   % 3
+     [active(1,1)-1,active(1,2),  active(1,3)];   % 4                      
+     [active(1,1),  active(1,2)+1,active(1,3)];   % 5  %mactive(1,1)ddle z plane                     
+     [active(1,1),active(1,2),    active(1,3)-1];     % 6      %hactive(1,1)gher z plane
      
-     [active(grain,1)+1,active(grain,2),  active(grain,3)+1]; % 7
-     [active(grain,1),  active(grain,2)-1,active(grain,3)+1]; % 8
-     [active(grain,1)-1,active(grain,2),  active(grain,3)+1]; % 9
-     [active(grain,1),  active(grain,2)+1,active(grain,3)+1]; % 10
-     [active(grain,1)+1,active(grain,2)+1,active(grain,3)+1]; % 11
-     [active(grain,1)+1,active(grain,2)-1,active(grain,3)+1]; % 12
-     [active(grain,1)-1,active(grain,2)-1,active(grain,3)+1]; % 13
-     [active(grain,1)-1,active(grain,2)+1,active(grain,3)+1]; % 14  
+     [active(1,1)+1,active(1,2),  active(1,3)+1]; % 7
+     [active(1,1),  active(1,2)-1,active(1,3)+1]; % 8
+     [active(1,1)-1,active(1,2),  active(1,3)+1]; % 9
+     [active(1,1),  active(1,2)+1,active(1,3)+1]; % 10
+     [active(1,1)+1,active(1,2)+1,active(1,3)+1]; % 11
+     [active(1,1)+1,active(1,2)-1,active(1,3)+1]; % 12
+     [active(1,1)-1,active(1,2)-1,active(1,3)+1]; % 13
+     [active(1,1)-1,active(1,2)+1,active(1,3)+1]; % 14  
      
-     [active(grain,1)+1,active(grain,2)+1,active(grain,3)];   % 15
-     [active(grain,1)+1,active(grain,2)-1,active(grain,3)];   % 16
-     [active(grain,1)-1,active(grain,2)-1,active(grain,3)];   % 17
-     [active(grain,1)-1,active(grain,2)+1,active(grain,3)];   % 18  
+     [active(1,1)+1,active(1,2)+1,active(1,3)];   % 15
+     [active(1,1)+1,active(1,2)-1,active(1,3)];   % 16
+     [active(1,1)-1,active(1,2)-1,active(1,3)];   % 17
+     [active(1,1)-1,active(1,2)+1,active(1,3)];   % 18  
      
-     [active(grain,1)+1,active(grain,2),  active(grain,3)-1]; % 19
-     [active(grain,1),  active(grain,2)-1,active(grain,3)-1]; % 20
-     [active(grain,1)-1,active(grain,2),  active(grain,3)-1]; % 21
-     [active(grain,1),  active(grain,2)+1,active(grain,3)-1]; % 22
-     [active(grain,1)+1,active(grain,2)+1,active(grain,3)-1]; % 23
-     [active(grain,1)+1,active(grain,2)-1,active(grain,3)-1]; % 24
-     [active(grain,1)-1,active(grain,2)-1,active(grain,3)-1]; % 25
-     [active(grain,1)-1,active(grain,2)+1,active(grain,3)-1]; % 26 
+     [active(1,1)+1,active(1,2),  active(1,3)-1]; % 19
+     [active(1,1),  active(1,2)-1,active(1,3)-1]; % 20
+     [active(1,1)-1,active(1,2),  active(1,3)-1]; % 21
+     [active(1,1),  active(1,2)+1,active(1,3)-1]; % 22
+     [active(1,1)+1,active(1,2)+1,active(1,3)-1]; % 23
+     [active(1,1)+1,active(1,2)-1,active(1,3)-1]; % 24
+     [active(1,1)-1,active(1,2)-1,active(1,3)-1]; % 25
+     [active(1,1)-1,active(1,2)+1,active(1,3)-1]; % 26 
              ];   %(x,y, z)
     
     if left == 1   % 2nd index can't go to +1: 
@@ -87,7 +87,6 @@ function neigh = func_assign_neighbuor(active, grain, n,m,l)
         neigh(8,:) = nan(1,3);        
         neigh(3,:) = nan(1,3);
     end
-    
     
     if begin == 1 % first index can't go to +1:
         neigh(23:24,:) = nan(2,3);
@@ -119,84 +118,5 @@ function neigh = func_assign_neighbuor(active, grain, n,m,l)
     
     neigh = neigh(all(~isnan(neigh),2),:); 
     
-%{
-if active(grain,3) == 1 % one, bottom plane
-    neigh = [
-    [active(grain,1),active(grain,2),active(grain,3)+1];       %hactive(grain,1)gher z plane
-    [active(grain,1)+1,active(grain,2),  active(grain,3)];   
-    [active(grain,1),  active(grain,2)-1,active(grain,3)];   
-    [active(grain,1)-1,active(grain,2),  active(grain,3)];   
-    [active(grain,1),  active(grain,2)+1,active(grain,3)];  %mactive(grain,1)ddle z plane
-
-    [active(grain,1)+1,active(grain,2),  active(grain,3)+1]; 
-    [active(grain,1),  active(grain,2)-1,active(grain,3)+1]; 
-    [active(grain,1)-1,active(grain,2),  active(grain,3)+1]; 
-    [active(grain,1),  active(grain,2)+1,active(grain,3)+1]; 
-    [active(grain,1)+1,active(grain,2)+1,active(grain,3)+1]; 
-    [active(grain,1)+1,active(grain,2)-1,active(grain,3)+1]; 
-    [active(grain,1)-1,active(grain,2)-1,active(grain,3)+1]; 
-    [active(grain,1)-1,active(grain,2)+1,active(grain,3)+1];
-    [active(grain,1)+1,active(grain,2)+1,active(grain,3)];   
-    [active(grain,1)+1,active(grain,2)-1,active(grain,3)];   
-    [active(grain,1)-1,active(grain,2)-1,active(grain,3)];   
-    [active(grain,1)-1,active(grain,2)+1,active(grain,3)];                 
-    %[active(grain,1)+1,active(grain,2),  active(grain,3)-1]; [active(grain,1),  active(grain,2)-1,active(grain,3)-1]; [active(grain,1)-1,active(grain,2),  active(grain,3)-1]; [active(grain,1),  active(grain,2)+1,active(grain,3)-1]; [active(grain,1),active(grain,2),active(grain,3)-1];       %hactive(grain,1)gher z plane
-    %[active(grain,1)+1,active(grain,2)+1,active(grain,3)-1]; [active(grain,1)+1,active(grain,2)-1,active(grain,3)-1]; [active(grain,1)-1,active(grain,2)-1,active(grain,3)-1]; [active(grain,1)-1,active(grain,2)+1,active(grain,3)-1];
-         ];   %(x,y, z)
-
-elseif  active(grain,3) == l % el, active(grain,3) = EL, top plane
-    neigh = [
-    [active(grain,1)+1,active(grain,2),  active(grain,3)];  
-    [active(grain,1),  active(grain,2)-1,active(grain,3)];   
-    [active(grain,1)-1,active(grain,2),  active(grain,3)];   
-    [active(grain,1),  active(grain,2)+1,active(grain,3)];  %mactive(grain,1)ddle z plane
-    [active(grain,1),active(grain,2),    active(grain,3)-1];       %hactive(grain,1)gher z plane
-
-    [active(grain,1)+1,active(grain,2)+1,active(grain,3)];   
-    [active(grain,1)+1,active(grain,2)-1,active(grain,3)];   
-    [active(grain,1)-1,active(grain,2)-1,active(grain,3)];   
-    [active(grain,1)-1,active(grain,2)+1,active(grain,3)];                 
-    [active(grain,1)+1,active(grain,2),  active(grain,3)-1]; 
-    [active(grain,1),  active(grain,2)-1,active(grain,3)-1]; 
-    [active(grain,1)-1,active(grain,2),  active(grain,3)-1]; 
-    [active(grain,1),  active(grain,2)+1,active(grain,3)-1]; 
-    [active(grain,1)+1,active(grain,2)+1,active(grain,3)-1]; 
-    [active(grain,1)+1,active(grain,2)-1,active(grain,3)-1]; 
-    [active(grain,1)-1,active(grain,2)-1,active(grain,3)-1]; 
-    [active(grain,1)-1,active(grain,2)+1,active(grain,3)-1];
-         ];   %(x,y, z)
-
-
-else 
-    neigh = [                        
-     [active(grain,1),active(grain,2),active(grain,3)+1];       %hactive(grain,1)gher z plane                        
-     [active(grain,1)+1,active(grain,2),  active(grain,3)];                        
-     [active(grain,1),  active(grain,2)-1,active(grain,3)];   
-     [active(grain,1)-1,active(grain,2),  active(grain,3)];                        
-     [active(grain,1),  active(grain,2)+1,active(grain,3)];  %mactive(grain,1)ddle z plane                     
-     [active(grain,1),active(grain,2),active(grain,3)-1];       %hactive(grain,1)gher z plane
-
-     [active(grain,1)+1,active(grain,2),  active(grain,3)+1]; 
-     [active(grain,1),  active(grain,2)-1,active(grain,3)+1]; 
-     [active(grain,1)-1,active(grain,2),  active(grain,3)+1]; 
-     [active(grain,1),  active(grain,2)+1,active(grain,3)+1]; 
-     [active(grain,1)+1,active(grain,2)+1,active(grain,3)+1]; 
-     [active(grain,1)+1,active(grain,2)-1,active(grain,3)+1]; 
-     [active(grain,1)-1,active(grain,2)-1,active(grain,3)+1]; 
-     [active(grain,1)-1,active(grain,2)+1,active(grain,3)+1];                     
-     [active(grain,1)+1,active(grain,2)+1,active(grain,3)];   
-     [active(grain,1)+1,active(grain,2)-1,active(grain,3)];   
-     [active(grain,1)-1,active(grain,2)-1,active(grain,3)];   
-     [active(grain,1)-1,active(grain,2)+1,active(grain,3)];                 
-     [active(grain,1)+1,active(grain,2),  active(grain,3)-1]; 
-     [active(grain,1),  active(grain,2)-1,active(grain,3)-1]; 
-     [active(grain,1)-1,active(grain,2),  active(grain,3)-1]; 
-     [active(grain,1),  active(grain,2)+1,active(grain,3)-1]; 
-     [active(grain,1)+1,active(grain,2)+1,active(grain,3)-1]; 
-     [active(grain,1)+1,active(grain,2)-1,active(grain,3)-1]; 
-     [active(grain,1)-1,active(grain,2)-1,active(grain,3)-1]; 
-     [active(grain,1)-1,active(grain,2)+1,active(grain,3)-1];
-             ];   %(x,y, z)
-end
-%}
+    
 end

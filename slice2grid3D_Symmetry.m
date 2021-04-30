@@ -11,15 +11,13 @@ end
 %clear all;
 tic
 inputfile = 'MeltPoolExtended.csv';
-Tleft = 2000; % K, everything smaller will be removed
-filling_temperature = 2200; % K
 
-presicion = 5;
+presicion = 10;
 digits(presicion);
 
 %% grid parameters:
-dx = 1.e-3; % mm  % 100 for 4 cells per z. 1um gives 2000s per small timestep
-fprintf('dx=%3.f um \n', dx*1000);
+dx =1.e-3; % mm  % 100 for 4 cells per z. 1um gives 2000s per small timestep
+fprintf('dx=%4.f um \n', dx*1000);
 dy = dx;     % uniform array
 dz = dx;     % uniform array
 
@@ -56,10 +54,14 @@ if input_full
     vq = griddata(x,y, z, v ,xi,yi, zi); 
 else
         % looking for min max max values which will be used for meshgrid
-    xmin = min(x);
+    xmin = min(x) + 1.3;  % removing left part
     xmax = max(x);
+    
+%     ymin = min(y);
+%     ymax = max(y);
     ymin = (min(y) + max(y))/2 - 0*dx;
     ymax = (min(y) + max(y))/2 + 1*dx;
+
     zmin = min(z);% + max(z)*2/3;
     zmax = max(z);
     [xi,yi, zi] = meshgrid(xmin:dx:xmax, ymin:dy:ymax, zmin:dz:zmax);
@@ -92,18 +94,24 @@ if 1
     xslice=[xi(1), xi(end)];
     yslice=[yi(1), yi(end)];
     zslice=[zi(1), zi(end)/2, zi(end)/2];
-    slice(xi, yi, zi, vq, xslice, yslice, zslice)    % display the slices
+    h=slice(xi, yi, zi, vq, xslice, yslice, zslice);    % display the slices
     ylim([-3 3])
     view(-34,24)
 
     cb = colorbar;                                  % create and label the colorbar
     cb.Label.String = 'Temperature, C';
 
-    grid off
+    set(h, 'EdgeColor', 'none');  
     axis equal
+    grid off
+    view(0,0)
+    axis equal
+    
 end
 
 
 
 % clearvars -except vq xi yi zi xslice yslice zslice xmin ymin zmin
 save('InterpolatedTemperatureGrid.mat') %, '-v7.3'
+
+% run MirrorSlice.m

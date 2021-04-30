@@ -1,8 +1,10 @@
 % sliceExtension3D
+
 clear all;
-xplus = 1.5; %1.1;%2.5;
-xminus = 0.1;
-inputfile = 'MeltPool.csv';
+xplus = 2.5; %1.1;%2.5;
+xminus = 0;
+inputfile = 'Temperature_100mms_Normal.csv';  % fast
+inputfile = 'Temperature_100mms.csv' % full pres. slow
 rows = csvread(inputfile); rows = single(rows);
 x = rows(:,1);
 y = rows(:,2);  % fixed

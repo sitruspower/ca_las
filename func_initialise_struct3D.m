@@ -58,7 +58,7 @@ if 1
                 cell.beta = beta(i,j,k);
                 cell.gamma= gamma(i,j,k);              
                 cell.grain = j + (i-1)*n + (k-1)*n*m;            
-                cell.undercooling = 100; %Tliq-temp(i,j);
+%                 cell.undercooling = 0; %Tliq-temp(i,j);
                 cell.length = 0;
                 cell.active = 0;       % is 1 if active
                 cell.deltaTime = 0;

@@ -1,12 +1,21 @@
 %% Import Script for EBSD Data
 
 close all;
+% ORIGINAL FILENAME
 
-biggrainsize = 50;
+% Office PC Quasi2D folder
+pname = 'D:\OneDrive - University of Nottingham\OneDrive - The University of Nottingham\1.3. Solidification Project\4. Modelling\1. CA Model FINAL\1.1CA_Quasi2D';
+pname = 'C:\Users\Dima\OneDrive - The University of Nottingham\1.3. Solidification Project\4. Modelling\1. CA Model FINAL\1.1CA_Quasi2D _100mmsResults';
+fname = [pname '\mystruct.ctf'];  % - copy" for cubic
+
+% fname = [pname '\rand_struct.ctf'];  % - copy" for cubic
+
+
+biggrainsize = 600; % perfect for 1mm grid
+biggrainsize = 600.;
 % smallerthan = 600; % avoids vcalculations of small grains
 
-model = 0;
-
+model = 1;
 
 name = ' tetragonal';
 if 1  % loading results
@@ -18,43 +27,17 @@ CS = {...
   crystalSymmetry('12/m1', [5.1 5.2 5.3], [90,99.22,90]*degree, 'X||a*', 'Y||b', 'Z||c', 'mineral', 'monoclinic', 'color', [0.56 0.74 0.56])};
 
 %% plotting convention
-%1
-setMTEXpref('xAxisDirection','east');
-setMTEXpref('zAxisDirection','outOfPlane');
-%2
-setMTEXpref('xAxisDirection','north');
-setMTEXpref('zAxisDirection','outOfPlane');
-%3
-setMTEXpref('xAxisDirection','west');
-setMTEXpref('zAxisDirection','outOfPlane');
-
 %4 
 setMTEXpref('xAxisDirection','south');
 setMTEXpref('zAxisDirection','outOfPlane');
-
-% 
-% setMTEXpref('xAxisDirection','east');
-% setMTEXpref('zAxisDirection','outOfPlane');
 
 %% Specify File Names
 
 % path to files
 pname = 'D:\OneDrive - University of Nottingham\OneDrive - The University of Nottingham\1.3. Solidification Project\4. Modelling\1. CA Model FINAL\1. Main Git\CA_grain_growth_laser_melting-main';
-% which files to be imported
-%fname = [pname '\TR6_Export.ctf'];
-% fname = [pname '\LP100V50 Site 25Export.ctf'];
+pname = 'C:\Users\Dima\OneDrive - The University of Nottingham\1.3. Solidification Project\4. Modelling\1. CA Model FINAL\1.1CA_Quasi2D';
 
-% longitud:
-% fname = [pname '\LP100V2p5Export.ctf'];
-% fname = [pname '\LP100V10 Site 15Export.ctf'];
-% fname = [pname '\LP100V10Site5Export.ctf'];
-% fname = [pname '\LP100V25Export.ctf'];
-% fname = [pname '\small_ctf.ctf'];
-% fname = [pname '\TR4_Export.ctf'];
-
-fname = [pname '\mystruct.ctf'];  % - copy" for cubic
-
-original_EBSD = 1;
+original_EBSD = 0;
 if original_EBSD == 1
     fname = [pname '\LP100V2p5Export.ctf']; 
 end
@@ -67,12 +50,12 @@ end % loading finished
 
 %% PARAMETERS
 % EBSD Map processing
-plot_ebsd = 1; 
+plot_ebsd =1; 
 plot_ipf_key_ebsd = 1; % plotting ipf key for colouring
 plot_crystals = 1; % plotting crystals on the EBSD map
 % one of the two: 
 grain_cubic_orient = 1;
-grain_sphere_orient = 0;
+grain_sphere_orient =1;
 
 % ORIENTATION DISTRIBUTION FUNCTION
 plot_ODF = 1;
@@ -104,16 +87,17 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ebsd(' tetragonal').orientations;
-
+grains = calcGrains(ebsd('indexed'),'theshold',1*degree)%1*degree
+big_grains = grains(grains.grainSize > biggrainsize); % 500 lat, 200 for transverse
+%       
 %% 
 % PLOTTING EBSD
 if plot_ebsd == 1
     % plotting ebsd data: 
-    f0=figure
+    f0=figure;
     plot(ebsd(' tetragonal'),ebsd(' tetragonal').orientations,'micronbar','off')
     % reconstruct grains with theshold angle 6 degree
-    grains = calcGrains(ebsd('indexed'),'theshold',1*degree)%1*degree
-
+    
     % smooth the grains to avoid the stair casing effect
     %grains = smooth(grains,5);
 
@@ -133,8 +117,8 @@ if plot_ebsd == 1
         
         plot(grains.boundary,'lineWidth',0.5,'micronbar','off')
         % 5. select only very large grains
-        big_grains = grains(grains.grainSize > biggrainsize); % 500 lat, 200 for transverse
-%         big_grains = grains(grains.grainSize < smallerthan); % 500 lat, 200 for transverse
+%           big_grains = grains(grains.grainSize < smallerthan); % 500 lat, 200 for transverse
+          big_grains = grains(grains.grainSize > biggrainsize); % 500 lat, 200 for transverse
         % 6.  plot the crystals
         hold on
         %% TYPE 1; CUBIC CRYSTAL ORIENTED
@@ -177,7 +161,7 @@ if plot_ODF == 1
     odf = calcDensity(big_grains(' tetragonal').meanOrientation)
     ori = orientation.byEuler(0,0,0,ebsd(' tetragonal').CS);
     odf.eval(ori)
-    plot3d(odf,'Euler')
+    plot3d(odf,'Euler', 'all')
     hold on
     %plot(ebsd.orientations,'Euler','MarkerEdgeColor','k')
     hold off
@@ -278,9 +262,10 @@ if plot_pole_fig == 1
 
     
 end
-
-
-saveas(f2, 'odf_map.png')
-saveas(f1, 'ipf_key.png')
-saveas(f3, 'ipf_distrib.png')
-saveas(f0, 'ebsd.png')
+save = 0;
+if save ==1
+    saveas(f2, 'odf_map.png')
+    saveas(f1, 'ipf_key.png')
+    saveas(f3, 'ipf_distrib.png')
+    saveas(f0, 'ebsd.png')
+end

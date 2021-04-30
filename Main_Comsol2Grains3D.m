@@ -27,11 +27,12 @@ end
 % then run:
 
 %% initialisation
-Tliq = 6000;
-Tsol = 3000;
+% Tliq = 3700; % [oC]
+Tliq = 3200; % [oC]
+Tsol = 2690; % [oC]
 A=1.e-4;         % growth velocity coefficient
 Tfilling = 2200; % oc. Change slice2grid3D.m when assigned different
-inputs=open('InterpolatedTemperatureGrid.mat'); % opening just for the slice, to be removed...
+inputs=open('InterpolatedTemperatureGrid.mat'); % op ening just for the slice, to be removed...
 %% opening grid values
 xi = inputs.xi;
 yi = inputs.yi;
@@ -70,32 +71,21 @@ disp('___________________________________')
 %CORRECT MAIN FUNCTION
 active = func_active_cells3D(struct, dx); % xslice, yslice, zslice, xi, yi, zi, xmin, ymin, zmin);
 toc
-% vmax = max(vertcat(struct.undercooling)).^2*A;
-v_mushy = struct.temp(struct.temp<Tliq);
-v_mushy = v_mushy(v_mushy>Tsol);
-% vmax = single(max(Tliq-v_mushy, [], 'all')); 
-vmax = 100.^2*A;
 
-%% timestepping
-% length of capture: defined as number of timesteps(N_TSTEP)/(DX_ADV)timestep dx advance
-% CAREFUL!!! MESH-DEPENDENT PARAMETER!!!
-length_of_capture = 50; % how many dx will be advanced during captire. ~30 is great. 
-%  how many (dx) advances can be in a single timestep
-DX_ADV = 5.; % set to 1 for fastest growth.
-N_TSTEP= length_of_capture*DX_ADV; % 80=17; 40=9, 60=13
-timestep = dx/(DX_ADV*vmax); % *sqrt(3) 
-
-timelimit = timestep*N_TSTEP; %0.04;
-
-%Tliqhigh = Tliq + max_grad*delta_pos; % deg C, where it won't attach new point. second number
-Tliqhigh = Tliq;  % overriding Tliqhigh, thus growth only in mushy zone
+%% timestepping now inside func_growth_in_sl_parallel
+timestep = 0;
+timelimit = 0;
 
 %% s-l interface moveme
-delta_pos = round(length_of_capture/2);
+% delta_pos = round(length_of_capture/2);
+delta_pos = 25;
+
+% delta_pos = 5;
+
 disp('___________________________________')
 
-for pos=1:delta_pos :round(3*m/6) %10:10:600
-    
+
+for pos=1:delta_pos:round(5*m/6)
     tic        
     presicion = 3;
     digits(presicion);
@@ -107,8 +97,11 @@ for pos=1:delta_pos :round(3*m/6) %10:10:600
     %% checking. Moving active on pos instead of moving the pool:
     struct = func_restruct_fs_addT3D(struct, temperature, Tliq, Tsol,n,m,l, active);  % no plotting
 %     plot_fsstruct(struct,n,m,l)
-    
+
     active = func_active_cells3D(struct, dx);
+        % set random orientation of top left corner to ...
+    
+        
     disp('TIME TO MOVE STRUCT AND FIND ACTIVE:')   
     toc
     disp('___________________________________')
@@ -135,12 +128,8 @@ savefig(strcat('Alpha. pos=', string(pos),'.fig'))
 
 %% saving struct and postprocessing via MTEX:
 save('mystruct.mat', 'struct')
+pause(1.)
 run struct_to_ctf_export.m
-run mtex_script.m
-
-% save('mystruct.mat', 'struct', '-v7.3')
-% pos=round(3*m/6);
-% ystrcat('pos=', string(pos),'.fig');
-% savefig(strcat('Alpha. pos=', string(pos),'.fig'))
+% run mtex_script.m
 
 pause(1/1000)

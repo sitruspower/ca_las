@@ -8,6 +8,9 @@ dx=10.25;
 % initial octahedron
 x=1;y=1;z=1;
 length = dx*3;
+triangulation_matrix = [5     2     1     3;
+    6     1     2     3;4     5     1     3;
+                        4     1     6     3;];
 
 % neighbouring octahedron
 MaxI = 2;
@@ -22,7 +25,7 @@ octahedron_points = func_calculate_points3D([x,y,z],...
                xmin, ymin, zmin,dx, ...
                a,b,g, length);
 % checking if the neighbour is captured aty all
-IsCaptured = logical(func_check_inside3D(octahedron_points, func_ijk_to_xyz(neighb, dx,xmin,ymin,zmin)));
+IsCaptured = logical(func_check_inside3D(octahedron_points, func_ijk_to_xyz(neighb, dx,xmin,ymin,zmin), triangulation_matrix));
 % calculating new length
 Lnew = func_calculate_grain_length(octahedron_points,func_ijk_to_xyz(neighb, dx,xmin,ymin,zmin), 0);
 % calculating neighbour's octahedron points

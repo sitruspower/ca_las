@@ -5,7 +5,7 @@ if color == 0
 end
 
 % THIS PART TEMPORARILY COMMENTED! 
-% neigh = func_ijk_to_xyz(neigh, dx,xmin,ymin,zmin);
+neigh = func_ijk_to_xyz(neigh, dx,xmin,ymin,zmin);
 % hold on
 scatter3(neigh(:,2),neigh(:,3),neigh(:,1),sz, 'filled', color)
 

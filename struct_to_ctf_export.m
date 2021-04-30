@@ -1,52 +1,41 @@
 clear all;
+
 LONGIT = 1;  % For longitudinal cross section set 1;
+
+dx = 1*1e-3
+
 struct_filename = 'mystruct.mat'
+struct_filename = 'StructMidPlane_pos2376_dx1um_Tliq3200Ts2690.mat'
 output_name = 'mystruct.ctf'
+
+% TESTING RANDOM ORIENTATION
+% struct_filename = 'rand_struct.mat'
+% output_name = 'rand_struct.ctf'
 
 % Loading results from struct:
 if 1
     s = open(struct_filename);
     s = s.struct;
-    %mesh_struct = open('Struct_mesh.mat');
     [n,m,l] = size(s.alpha);
     % Euler Angles output:
     alpha = [s.alpha];
     beta = [s.beta];
     gamma = [s.gamma];
     
-%     % reshaping inputs into 3D:
-%     alpha = reshape(alpha,n,m,l);
-%     beta = reshape(beta,n,m,l);
-%     gamma = reshape(gamma,n,m,l);
-
     % export transverse XY map: 
     tic
     if LONGIT ==1
-        alpha_mid_XZ = zeros(m,l);
-        beta_mid_XZ = zeros(m,l);
-        gamma_mid_XZ = zeros(m,l);
-        % was a parfor loop:
-        for i=1:m % X loop
-            for j = 1:l  % Z loop        
-                alpha_mid_XZ(i,j) = alpha(round(n/2),i,j)*180/pi;
-                beta_mid_XZ(i,j) =   beta(round(n/2),i,j)*180/pi;
-                gamma_mid_XZ(i,j) = gamma(round(n/2),i,j)*180/pi;        
-            end
-        end
-    toc
-        
+        alpha_to_ctf = zeros(m,l);
+        beta_to_ctf = zeros(m,l);
+        gamma_to_ctf = zeros(m,l);
+    
+        alpha_to_ctf(:,:) = alpha(round(n/2),:,:)*180/pi;
+        beta_to_ctf(:,:) =   beta(round(n/2),:,:)*180/pi;
+        gamma_to_ctf(:,:) = gamma(round(n/2),:,:)*180/pi;
     else
-        alpha_top_XY = zeros(n,m);
-        beta_top_XY = zeros(n,m);
-        gamma_top_XY = zeros(n,m);
-        for i=1:n % X loop
-            for j = 1:m  % Y loop        
-                alpha_top_XY(i,j) = alpha(i,j,round(l));
-                beta_top_XY(i,j) = beta(i,j,round(l));
-                gamma_top_XY(i,j) = gamma(i,j,round(l));        
-            end
-        end
-
+        alpha_to_ctf(:,:) = alpha(:,:,round(l));
+        beta_to_ctf(:,:) = beta(:,:,round(l));
+        gamma_to_ctf(:,:) = gamma(:,:,round(l));    
     end
 end
 
@@ -86,20 +75,18 @@ if 1
     end
 end
 
-
+% writing longitudinal euler angles:
 if LONGIT == 1  % then in XZ plane, j stands for Z
     for i=1:XCells
         for j=1:YCells
 
-            EU1 = alpha_mid_XZ(i,j);
-            EU2 = beta_mid_XZ(i,j);
-            EU3 = gamma_mid_XZ(i,j);
+            EU1 = alpha_to_ctf(i,j);
+            EU2 = beta_to_ctf(i,j);
+            EU3 = gamma_to_ctf(i,j);
 
             strwrite = sprintf('%s \t %s \t %s \t %s \t %s \t %s \t %s \t %s \t %s \t %s \t %s \t \n',...
-            string(1),string(j-1),string(i-1),string(0),string(0),string(EU1),string(EU2),string(EU3),string(0),string(0),string(0));
+            string(1),string((j-1)*dx),string((i-1)*dx),string(0),string(0),string(EU1),string(EU2),string(EU3),string(0),string(0),string(0));
              % Phase	  X        	Y	       Bands	  Error	    Euler1	   Euler2	     Euler3	       MAD	    BC    BS
-
-
             fprintf(fileID, strwrite);
         end
 
@@ -109,9 +96,8 @@ end
 
 fclose(fileID);
 %exporting lines:
-
-
-
+disp('STARTING MTEX_SCRIPT....')
+run mtex_script.m
 
 
 
